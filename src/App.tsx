@@ -2,7 +2,7 @@ import Header from './components/Header'
 import HeroVideo from './components/HeroVideo'
 import ProjectsGrid from './components/ProjectsGrid'
 import Footer from './components/Footer'
-import PhysicsMode from './components/PhysicsMode'
+import SpaceMode from './components/SpaceMode'
 
 export default function App() {
   return (
@@ -13,7 +13,7 @@ export default function App() {
         <ProjectsGrid />
       </main>
       <Footer />
-      <PhysicsMode />
+      <SpaceMode />
     </>
   )
 }
