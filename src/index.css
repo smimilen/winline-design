@@ -151,3 +151,21 @@ body {
     transition: none;
   }
 }
+
+/* Мяч-кнопка: покачивание и лёгкое вращение в покое */
+@keyframes ball-bob {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  50% { transform: translateY(-10px) rotate(6deg); }
+}
+.ball-toggle {
+  animation: ball-bob 3.2s ease-in-out infinite;
+  filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.5));
+  transition: transform 0.25s ease, opacity 0.3s ease;
+}
+.ball-toggle:hover {
+  animation-play-state: paused;
+  transform: scale(1.12);
+}
+@media (prefers-reduced-motion: reduce) {
+  .ball-toggle { animation: none; }
+}
