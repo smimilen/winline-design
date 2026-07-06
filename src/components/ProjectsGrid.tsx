@@ -119,7 +119,34 @@ export default function ProjectsGrid() {
       ),
     )
 
+    // Фирменный эффект shopify.design: «желейный» скос карточек
+    // пропорционально скорости скролла с пружинистым возвратом
+    const clampSkew = gsap.utils.clamp(-5, 5)
+    const proxy = { skew: 0 }
+    const skewSetters = cols.map((col) => gsap.quickSetter(col, 'skewY', 'deg'))
+    const applySkew = () => skewSetters.forEach((set) => set(proxy.skew))
+
+    const velocityST = ScrollTrigger.create({
+      trigger: grid,
+      start: 'top bottom',
+      end: 'bottom top',
+      onUpdate: (self) => {
+        const skew = clampSkew(self.getVelocity() / -350)
+        if (Math.abs(skew) > Math.abs(proxy.skew)) {
+          proxy.skew = skew
+          gsap.to(proxy, {
+            skew: 0,
+            duration: 0.9,
+            ease: 'power3.out',
+            overwrite: true,
+            onUpdate: applySkew,
+          })
+        }
+      },
+    })
+
     return () => {
+      velocityST.kill()
       ;[...tweens, ...parallax].forEach((t) => {
         t.scrollTrigger?.kill()
         t.kill()
