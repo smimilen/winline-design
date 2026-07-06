@@ -2,30 +2,37 @@ import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
+import imgA from '../assets/projects/card-a-lockerroom.webp'
+import imgB from '../assets/projects/card-b-luckyday.webp'
+import imgC from '../assets/projects/card-c-dragon.webp'
+import imgD from '../assets/projects/card-d-ronaldinho.webp'
+import imgE from '../assets/projects/card-e-gear.webp'
+import imgF from '../assets/projects/card-f-esports.webp'
+import imgG from '../assets/projects/card-g-trophy.webp'
+
 gsap.registerPlugin(ScrollTrigger)
 
 type Project = {
   id: string
   title: string
   tag: string
-  tone: string // плейсхолдер-заливка, потом заменится на превью
-  h: string // высота карточки на десктопе
+  image: string
+  ratio: string // aspect-ratio, чтобы сетка не прыгала при загрузке
 }
 
-// Данные карточек: поменяйте title/tag и добавьте поле image,
-// когда будут готовы реальные превью проектов
+// Порядок и пропорции соответствуют макету
 const COL_1: Project[] = [
-  { id: 'a', title: 'Проект 01', tag: 'Мобильное приложение', tone: '#94959a', h: 'md:h-[560px]' },
-  { id: 'b', title: 'Проект 02', tag: 'Веб-платформа', tone: '#8a8b90', h: 'md:h-[620px]' },
+  { id: 'a', title: 'Раздевалка', tag: 'Игровое приложение', image: imgA, ratio: '1193 / 1656' },
+  { id: 'b', title: 'Счастливый день', tag: 'Мини-игра', image: imgB, ratio: '1192 / 1884' },
 ]
 const COL_2: Project[] = [
-  { id: 'c', title: 'Проект 03', tag: 'Брендинг', tone: '#9a9b9f', h: 'md:h-[350px]' },
-  { id: 'd', title: 'Проект 04', tag: 'Продуктовый дизайн', tone: '#8f9094', h: 'md:h-[480px]' },
-  { id: 'e', title: 'Проект 05', tag: 'Кампания', tone: '#96979b', h: 'md:h-[220px]' },
+  { id: 'c', title: 'Игровой арт', tag: 'Иллюстрация', image: imgC, ratio: '1194 / 1056' },
+  { id: 'd', title: 'Рональдиньо', tag: 'Коллекционные карточки', image: imgD, ratio: '1194 / 1726' },
+  { id: 'e', title: 'Экипировка', tag: 'Стикеры и айтемы', image: imgE, ratio: '1194 / 714' },
 ]
 const COL_3: Project[] = [
-  { id: 'f', title: 'Проект 06', tag: 'Интерфейс', tone: '#8c8d92', h: 'md:h-[540px]' },
-  { id: 'g', title: 'Проект 07', tag: 'Моушен', tone: '#98999d', h: 'md:h-[640px]' },
+  { id: 'f', title: 'Киберспорт', tag: 'Беттинг-интерфейс', image: imgF, ratio: '1193 / 1656' },
+  { id: 'g', title: 'Кубок', tag: '3D и кампании', image: imgG, ratio: '1192 / 1884' },
 ]
 
 function Card({ p }: { p: Project }) {
@@ -33,10 +40,16 @@ function Card({ p }: { p: Project }) {
     <a
       href="#top"
       data-card
-      className={`project-card block h-[420px] ${p.h}`}
+      className="project-card block w-full"
+      style={{ aspectRatio: p.ratio }}
       aria-label={`${p.title} — ${p.tag}`}
     >
-      <div className="card-media" style={{ background: p.tone }} />
+      <img
+        src={p.image}
+        alt={`${p.title} — ${p.tag}`}
+        loading="lazy"
+        className="card-media w-full h-full object-cover"
+      />
       <div className="card-overlay" aria-hidden="true" />
       <div className="card-meta">
         <div>
@@ -63,41 +76,68 @@ export default function ProjectsGrid() {
     if (reduced) return
 
     const cards = gsap.utils.toArray<HTMLElement>('[data-card]', grid)
+
+    // Появление в духе shopify.design: карточки мягко «всплывают»
+    // со сдвигом, лёгким масштабом и ступенчатой задержкой по колонкам
     const tweens = cards.map((card, i) =>
       gsap.fromTo(
         card,
-        { y: 60, opacity: 0 },
+        { y: 90, opacity: 0, scale: 0.96 },
         {
           y: 0,
           opacity: 1,
-          duration: 0.9,
+          scale: 1,
+          duration: 1.1,
           ease: 'power3.out',
-          delay: (i % 3) * 0.08,
+          delay: (i % 3) * 0.1,
+          clearProps: 'transform,opacity', // иначе инлайновый transform GSAP перебивает :hover
           scrollTrigger: {
             trigger: card,
-            start: 'top 88%',
+            start: 'top 92%',
             toggleActions: 'play none none none',
           },
         },
       ),
     )
-    return () => tweens.forEach((t) => {
-      t.scrollTrigger?.kill()
-      t.kill()
-    })
+
+    // Лёгкий параллакс: средняя колонка едет чуть медленнее остальных
+    const cols = gsap.utils.toArray<HTMLElement>('[data-col]', grid)
+    const parallax = cols.map((col, i) =>
+      gsap.fromTo(
+        col,
+        { y: 0 },
+        {
+          y: i === 1 ? -46 : -12,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: grid,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 0.8,
+          },
+        },
+      ),
+    )
+
+    return () => {
+      ;[...tweens, ...parallax].forEach((t) => {
+        t.scrollTrigger?.kill()
+        t.kill()
+      })
+    }
   }, [])
 
   return (
-    <section className="bg-bg-deep py-6 md:py-10">
+    <section className="bg-bg-deep py-8 md:py-14 overflow-hidden">
       <div ref={gridRef} className="max-w-[1440px] mx-auto px-5 md:px-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6 items-start">
-          <div className="flex flex-col gap-5 md:gap-6">
+          <div data-col className="flex flex-col gap-5 md:gap-6">
             {COL_1.map((p) => <Card key={p.id} p={p} />)}
           </div>
-          <div className="flex flex-col gap-5 md:gap-6">
+          <div data-col className="flex flex-col gap-5 md:gap-6">
             {COL_2.map((p) => <Card key={p.id} p={p} />)}
           </div>
-          <div className="flex flex-col gap-5 md:gap-6">
+          <div data-col className="flex flex-col gap-5 md:gap-6">
             {COL_3.map((p) => <Card key={p.id} p={p} />)}
           </div>
         </div>

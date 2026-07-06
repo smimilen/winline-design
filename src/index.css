@@ -77,18 +77,20 @@ body {
   background-color: #ff7c30;
 }
 
-/* Карточка проекта */
+/* Карточка проекта — ховер в духе shopify.design: подъём + мягкая тень + зум превью */
 .project-card {
   position: relative;
   overflow: hidden;
   border-radius: var(--radius-card);
-  background: var(--color-card);
+  background: var(--color-surface);
   cursor: pointer;
   transform: translateZ(0);
-  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .project-card:hover {
-  transform: scale(1.015);
+  transform: translateY(-8px) scale(1.01);
+  box-shadow: 0 24px 60px -18px rgba(0, 0, 0, 0.65);
 }
 .project-card .card-media {
   position: absolute;
