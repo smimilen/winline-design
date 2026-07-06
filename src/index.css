@@ -1,0 +1,166 @@
+@import "tailwindcss";
+
+/*
+  PF DIN — коммерческий шрифт. Положите файлы .woff2 в /public/fonts/
+  с именами ниже — они подхватятся автоматически. Пока файлов нет,
+  работает фоллбэк на Onest (визуально близкий гротеск).
+*/
+@font-face {
+  font-family: "PF DIN";
+  src: url("../fonts/PFDinTextCompPro-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "PF DIN";
+  src: url("../fonts/PFDinTextCompPro-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "PF DIN";
+  src: url("../fonts/PFDinTextCompPro-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --color-bg: #17181c;
+  --color-bg-deep: #101114;
+  --color-surface: #1e1f24;
+  --color-card: #8f9094;
+  --color-accent: #ff6a13;
+  --color-fg: #f4f4f5;
+  --color-muted: #6d6e74;
+
+  --font-din: "PF DIN", "Onest", "Arial Narrow", system-ui, sans-serif;
+  --font-onest: "Onest", system-ui, sans-serif;
+
+  --radius-card: 22px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-onest);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-bg-deep);
+}
+
+/* Кнопка «Ало связь» */
+.cta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.cta-pill .pill-label,
+.cta-pill .pill-arrow {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.25s ease;
+}
+.cta-pill:hover .pill-arrow {
+  transform: rotate(45deg);
+}
+.cta-pill:hover .pill-label {
+  background-color: #ff7c30;
+}
+
+/* Карточка проекта */
+.project-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-card);
+  background: var(--color-card);
+  cursor: pointer;
+  transform: translateZ(0);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.project-card:hover {
+  transform: scale(1.015);
+}
+.project-card .card-media {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.project-card:hover .card-media {
+  transform: scale(1.045);
+}
+.project-card .card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(12, 12, 14, 0.85) 0%,
+    rgba(12, 12, 14, 0.25) 38%,
+    transparent 62%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.project-card:hover .card-overlay,
+.project-card:focus-visible .card-overlay {
+  opacity: 1;
+}
+.project-card .card-meta {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 22px;
+  transform: translateY(12px);
+  opacity: 0;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.3s ease;
+}
+.project-card:hover .card-meta,
+.project-card:focus-visible .card-meta {
+  transform: translateY(0);
+  opacity: 1;
+}
+.project-card:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+/* Ленты WINLINE в футере */
+.ribbon-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+.ribbon-word {
+  font-family: var(--font-din);
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: -0.02em;
+  line-height: 0.9;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .project-card,
+  .project-card .card-media,
+  .cta-pill .pill-label,
+  .cta-pill .pill-arrow {
+    transition: none;
+  }
+}
