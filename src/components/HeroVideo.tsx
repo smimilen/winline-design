@@ -63,27 +63,27 @@ export default function HeroVideo() {
   return (
     <section id="top" ref={sectionRef} className="relative h-[320vh]">
       {/* Sticky-вьюпорт: видео закреплено, пока идёт скраббинг */}
-      <div className="sticky top-0 h-screen flex flex-col items-center justify-center overflow-hidden">
-        {/* Декоративное свечение позади видео */}
-        <div
-          aria-hidden="true"
-          className="absolute w-[80vmin] h-[80vmin] rounded-full opacity-20 blur-[120px]"
-          style={{
-            background:
-              'radial-gradient(circle, #ff6a13 0%, rgba(255,106,19,0.25) 45%, transparent 70%)',
-          }}
-        />
+      <div className="sticky top-0 h-screen overflow-hidden">
         <video
           ref={videoRef}
           muted
           playsInline
           preload="auto"
-          className="relative w-[min(86vw,980px)] aspect-video object-cover rounded-card"
+          className="absolute inset-0 w-full h-full object-cover"
         >
           <source src={VIDEO_SRC} type="video/mp4" />
           <source src={VIDEO_WEBM} type="video/webm" />
         </video>
-        <p className="relative mt-8 text-muted text-xs md:text-sm uppercase tracking-[0.35em] font-onest">
+        {/* Лёгкое затемнение сверху и снизу, чтобы читались хедер и подсказка */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              'linear-gradient(to bottom, rgba(16,17,20,0.55) 0%, transparent 22%, transparent 78%, rgba(16,17,20,0.6) 100%)',
+          }}
+        />
+        <p className="absolute bottom-8 left-1/2 -translate-x-1/2 text-fg/60 text-xs md:text-sm uppercase tracking-[0.35em] font-onest">
           Листай вниз
         </p>
       </div>
