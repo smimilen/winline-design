@@ -2,65 +2,51 @@ import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import logo from '../assets/logo.svg'
+import footerArt from '../assets/footer-art.svg'
 
 gsap.registerPlugin(ScrollTrigger)
 
-function RibbonWords({ count = 8 }: { count?: number }) {
-  return (
-    <>
-      {Array.from({ length: count }).map((_, i) => (
-        <span key={i} className="ribbon-word text-bg-deep text-[18vw] md:text-[13vw] px-[0.25em]">
-          WINLINE
-        </span>
-      ))}
-    </>
-  )
-}
-
-/* Две пересекающиеся оранжевые ленты с бегущим словом WINLINE —
-   двигаются в противоположные стороны, скорость привязана к скроллу */
+/* Фирменный баннер WINLINE из макета — полноширинный SVG
+   с лёгким параллакс-дрейфом при скролле */
 function WinlineBanner() {
   const wrapRef = useRef<HTMLDivElement>(null)
-  const trackA = useRef<HTMLDivElement>(null)
-  const trackB = useRef<HTMLDivElement>(null)
+  const artRef = useRef<HTMLImageElement>(null)
 
   useEffect(() => {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (reduced || !trackA.current || !trackB.current || !wrapRef.current) return
+    if (reduced || !wrapRef.current || !artRef.current) return
 
-    const tweens = [
-      gsap.to(trackA.current, { xPercent: -25, ease: 'none', duration: 26, repeat: -1 }),
-      gsap.to(trackB.current, { xPercent: 25, ease: 'none', duration: 30, repeat: -1 }),
-    ]
-
-    const st = ScrollTrigger.create({
-      trigger: wrapRef.current,
-      start: 'top bottom',
-      end: 'bottom top',
-      onUpdate: (self) => {
-        const boost = 1 + Math.min(Math.abs(self.getVelocity()) / 900, 2.5)
-        tweens.forEach((t) => gsap.to(t, { timeScale: boost, duration: 0.4, overwrite: true }))
+    const tween = gsap.fromTo(
+      artRef.current,
+      { yPercent: 10, scale: 1.06 },
+      {
+        yPercent: -6,
+        scale: 1,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: wrapRef.current,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 0.8,
+        },
       },
-    })
+    )
 
     return () => {
-      st.kill()
-      tweens.forEach((t) => t.kill())
+      tween.scrollTrigger?.kill()
+      tween.kill()
     }
   }, [])
 
   return (
-    <div ref={wrapRef} className="relative h-[52vw] md:h-[36vw] overflow-hidden" aria-hidden="true">
-      <div className="absolute left-[-12%] right-[-12%] top-[30%] -rotate-[9deg] bg-accent py-[0.5vw] overflow-hidden">
-        <div ref={trackA} className="ribbon-track">
-          <RibbonWords />
-        </div>
-      </div>
-      <div className="absolute left-[-12%] right-[-12%] top-[52%] rotate-[7deg] bg-accent py-[0.5vw] overflow-hidden opacity-90">
-        <div ref={trackB} className="ribbon-track">
-          <RibbonWords />
-        </div>
-      </div>
+    <div ref={wrapRef} className="relative overflow-hidden" aria-hidden="true">
+      <img
+        ref={artRef}
+        src={footerArt}
+        alt=""
+        className="block w-full h-auto will-change-transform"
+        loading="lazy"
+      />
     </div>
   )
 }

@@ -140,21 +140,6 @@ body {
   outline-offset: 3px;
 }
 
-/* Ленты WINLINE в футере */
-.ribbon-track {
-  display: flex;
-  width: max-content;
-  will-change: transform;
-}
-.ribbon-word {
-  font-family: var(--font-din);
-  font-weight: 700;
-  font-style: italic;
-  letter-spacing: -0.02em;
-  line-height: 0.9;
-  white-space: nowrap;
-}
-
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
